@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Video.js + xAPI Video Profile Example - Ted Talk mp4</title>
+    <link href="video-js-6.1.0/video-js.css" rel="stylesheet">
+    <script src="video-js-6.1.0/ie8/videojs-ie8.min.js"></script>
+    <script src="video-js-6.1.0/video.js"></script>
+    <script type="text/javascript" src="xAPIWrapper-1.10.4/src/xapiwrapper.js"></script>
+    <script type="text/javascript" src="xAPIWrapper-1.10.4/lib/cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="xapi-videojs.js"></script>
+
+</head>
+
+<body prefix="dcterms: http://purl.org/dc/terms/">
+
+  <div id="vidtitle" property="dcterms:title" content="GIMP for Instructional Designers (Part 4)"></div>
+  <div id="viddesc" property="dcterms:description" content="Part 4 on the fundamentals of using GIMP."></div>
+  
+  <video  id="vid1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264" data-setup="{}">
+    <source src="https://drive.google.com/open?id=1TX48sITDW4j5htOR-MfLkuAM5DxKkiEJ" type="video/mp4">
+    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+  </video>
+
+
+<script type="text/javascript">
+    
+    // ADL LRS Configuration - Basic Auth for demo purposes  
+    if(ADL.XAPIWrapper.lrs.auth == undefined) {
+        var conf = {
+           "endpoint" : "https://videocohort.lrs.io:443/xapi/",
+           "auth" : "Basic " + toBase64('videocohort:1827364vodeo345'),
+           "actor" : '{"mbox": "mailto:videocohort@veracity.it","name": "Team Video","objectType": "Agent"}'
+        };
+        ADL.XAPIWrapper.changeConfig(conf);       
+    }
+    // put into variables - title and description from the metadata DIV above the video element 
+    var activityTitle = document.getElementById('vidtitle').getAttribute('content');
+    var activityDesc = document.getElementById('viddesc').getAttribute('content');  
+    
+    ADL.XAPIVideoJS("vid1");
+    
+</script>
+
+</body>
+
+</html>
