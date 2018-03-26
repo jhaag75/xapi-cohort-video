@@ -21,6 +21,11 @@
         var played_segments_segment_start = null;
         var played_segments_segment_end = null;
         var started = false;
+        var actorEmail = localStorage.getItem("actorEmail");
+        var actorName = localStorage.getItem("actorName");
+
+        console.log('local storage actor name from page:' + localStorage.actorName);
+        console.log('local storage actor email from page:' + localStorage.actorEmail);
 
 
         // Get all text tracks for the current player to determine if there are any CC-Subtitles
@@ -215,7 +220,11 @@
             // prepare the xAPI initialized statement
             var initializedStmt = {
                 "id": sessionID,
-                "actor": actor,
+                "actor": {
+                    "name": actorName,
+                    "mbox": "mailto:" + actorEmail,
+                    "objectType": "Agent"
+                },
                 "verb": {
                     "id": "http://adlnet.gov/expapi/verbs/initialized",
                     "display": {
@@ -246,7 +255,6 @@
                         "https://w3id.org/xapi/video/extensions/full-screen": fullScreenOrNot,
                         "https://w3id.org/xapi/video/extensions/screen-size": screenSize,
                         "https://w3id.org/xapi/video/extensions/video-playback-size": playbackSize,
-                        // "https://w3id.org/xapi/video/extensions/quality": quality,
                         "https://w3id.org/xapi/video/extensions/cc-enabled": ccEnabled,
                         "https://w3id.org/xapi/video/extensions/cc-subtitle-lang": ccLanguage,
                         "https://w3id.org/xapi/video/extensions/speed": playbackRate + "x",
@@ -299,7 +307,11 @@
 
                     // prepare the xAPI interacted statement
                     var interactedStatement = {
-                        "actor": actor,
+                        "actor": {
+                            "name": actorName,
+                            "mbox": "mailto:" + actorEmail,
+                            "objectType": "Agent"
+                        },
                         "verb": {
                             "id": "http://adlnet.gov/expapi/verbs/interacted",
                             "display": {
@@ -373,7 +385,11 @@
                 start_played_segment(resultExtTime);
 
                 var playedStmt = {
-                    "actor": actor,
+                    "actor": {
+                        "name": actorName,
+                        "mbox": "mailto:" + actorEmail,
+                        "objectType": "Agent"
+                    },
                     "verb": {
                         "id": "https://w3id.org/xapi/video/verbs/played",
                         "display": {
@@ -451,7 +467,11 @@
                 } else {
 
                     var pausedStmt = {
-                        "actor": actor,
+                        "actor": {
+                            "name": actorName,
+                            "mbox": "mailto:" + actorEmail,
+                            "objectType": "Agent"
+                        },
                         "verb": {
                             "id": "https://w3id.org/xapi/video/verbs/paused",
                             "display": {
@@ -555,7 +575,11 @@
             console.log("video progress percentage:" + progress + ".");
 
             var completedStmt = {
-                "actor": actor,
+                "actor": {
+                    "name": actorName,
+                    "mbox": "mailto:" + actorEmail,
+                    "objectType": "Agent"
+                },
                 "verb": {
                     "id": "http://adlnet.gov/expapi/verbs/completed",
                     "display": {
@@ -648,7 +672,11 @@
             start_played_segment(currentTime);
 
             var seekedStmt = {
-                "actor": actor,
+                "actor": {
+                    "name": actorName,
+                    "mbox": "mailto:" + actorEmail,
+                    "objectType": "Agent"
+                },
                 "verb": {
                     "id": "https://w3id.org/xapi/video/verbs/seeked",
                     "display": {
@@ -725,7 +753,11 @@
             console.log("video progress percentage:" + progress + ".");
 
             var terminatedStmt = {
-                "actor": actor,
+                "actor": {
+                    "name": actorName,
+                    "mbox": "mailto:" + actorEmail,
+                    "objectType": "Agent"
+                },
                 "verb": {
                     "id": "http://adlnet.gov/expapi/verbs/terminated",
                     "display": {
@@ -814,7 +846,11 @@
             console.log("volume set to: " + volumeChange);
 
             var volChangeStmt = {
-                "actor": actor,
+                "actor": {
+                    "name": actorName,
+                    "mbox": "mailto:" + actorEmail,
+                    "objectType": "Agent"
+                },
                 "verb": {
                     "id": "http://adlnet.gov/expapi/verbs/interacted",
                     "display": {
@@ -892,7 +928,11 @@
                 //alert ("Playback Size:" + playbackSize);
 
                 var fullScreenTrueStmt = {
-                    "actor": actor,
+                    "actor": {
+                        "name": actorName,
+                        "mbox": "mailto:" + actorEmail,
+                        "objectType": "Agent"
+                    },
                     "verb": {
                         "id": "http://adlnet.gov/expapi/verbs/interacted",
                         "display": {
@@ -962,7 +1002,11 @@
                 //alert ("Playback Size:" + playbackSize);
 
                 var fullScreenFalseStmt = {
-                    "actor": actor,
+                    "actor": {
+                        "name": actorName,
+                        "mbox": "mailto:" + actorEmail,
+                        "objectType": "Agent"
+                    },
                     "verb": {
                         "id": "http://adlnet.gov/expapi/verbs/interacted",
                         "display": {
