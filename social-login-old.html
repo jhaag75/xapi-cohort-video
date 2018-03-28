@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>xAPI Cohort - Team Video Demo</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="css/auth0-style.css">
+
+</head>
+<body>
+  
+  
+  
+
+  <div id="loading">
+    <img src="assets/loading.svg" alt="Loading spinner">
+  </div>
+
+  <div class="content">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">xAPI Cohort 2018 - Team Video</a>
+
+          <a href="#" id="btn-home-view" class="btn btn-primary btn-margin">
+              Home
+          </a>
+
+          <button id="btn-profile-view" class="btn btn-primary btn-margin">
+              Profile
+          </button>
+
+          <button id="btn-login" class="btn btn-primary btn-margin">
+              Log In
+          </button>
+
+          <button id="btn-logout" class="btn btn-primary btn-margin">
+              Log Out
+          </button>
+
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      <!-- home view -->
+      <div id="home-view">
+          <h4></h4>
+      </div>
+
+      <!-- profile view -->
+      <div id="profile-view" class="panel panel-default profile-area">
+        <div class="panel-heading"><h3>Profile</h3></div>
+          <div class="panel-body">
+              <p>Below is the actor information from your social profile that will be used for xAPI statements. To continue, <a href="video-list.html">GO TO THE VIDEOS</a>. If you do not wish to continue, click the Log Out button.</p>
+            <img class="avatar" alt="avatar">
+            <div>
+                <div><strong>Actor Name:</strong> <span class="name"></span></div>
+              
+                <div><strong>Actor mbox:</strong> <span class="email"></span></div>
+            </div>
+            <br>
+            <pre class="full-profile"></pre>
+          </div>
+          <div align="center"><a href="video-list.html">GO TO VIDEOS</a></div>
+      </div>
+      
+    </main>
+  </div>
+  
+    
+
+  <script src="node_modules/auth0-js/build/auth0.js"></script>
+  <script src="js/auth0-variables.js"></script>
+  <script src="app.js"></script>
+
+  
+</body>
+</html>

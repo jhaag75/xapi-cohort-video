@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>xAPI Cohort - Team Video Demo</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700|Open+Sans:300,300i,400,400i,700,700i" rel="stylesheet">
+
+<!-- Bootstrap CSS File -->
+<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+
+<!-- Libraries CSS Files -->
+<link href="lib/animate/animate.min.css" rel="stylesheet">
+<link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+<link href="lib/ionicons/css/ionicons.min.css" rel="stylesheet">
+<link href="lib/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+<!-- Main Stylesheet File -->
+<link href="css/style.css" rel="stylesheet">
+<link rel="stylesheet" href="css/auth0-style.css">
+</head>
+
+<body>
+<div id="loading"> <img src="assets/loading.svg" alt="Loading spinner"> </div>
+
+<!--==========================
+    Header
+  ============================-->
+<header id="header">
+  <div class="container">
+    <div id="logo" align="center">
+      <h1><a href="#intro" class="scrollto">Team Video</a></h1>
+    </div>
+  </div>
+</header>
+<!-- #header --> 
+
+<!--==========================
+    Intro Section
+  ============================-->
+<section id="intro">
+  <div class="intro-text">
+    <h2>xAPI Cohort Project</h2>
+    <div class="content">
+      <h4 style="font-weight:lighter;color:#ffffff;"></h4>
+      <a href="index.html" id="btn-home-view" class="btn-get-started scrollto"> Home </a> <a href="#video-view" id="btn-video-view" class="btn-get-started scrollto"> Videos </a> <a href="#" id="btn-profile-view" class="btn-get-started scrollto"> Profile </a> <a href="#" id="btn-login" class="btn-get-started scrollto"> Log In </a> <a href="#" id="btn-logout" class="btn-get-started scrollto"> Log Out </a> </div>
+  </div>
+</section>
+<!-- #intro -->
+
+<main class="container"> 
+  <!-- home view -->
+  <div id="home-view"> </div>
+  <br>
+  
+  <!-- profile view -->
+  <div id="profile-view" class="panel panel-default profile-area">
+    <div class="panel-heading">
+      <h3>Profile</h3>
+    </div>
+    <div class="panel-body">
+      <p>Below is the actor information from your social profile that will be used for xAPI statements. If you do not wish to continue, click the Log Out button.</p>
+      <img class="avatar" alt="avatar">
+      <div>
+        <div><strong>Actor Name:</strong> <span class="name"></span></div>
+        <div><strong>Actor mbox:</strong> <span class="email"></span></div>
+      </div>
+      <br>
+      <pre class="full-profile"></pre>
+    </div>
+  </div>
+  
+  <!-- Video view -->
+  <div id="video-view" class="panel panel-default video-area">
+    <div class="panel-heading">
+      <h3>Videos</h3>
+    </div>
+    <div class="panel-body">
+      <h3>Mixology</h3>
+      <div>Mojito Video</div>
+      <br>
+      <br>
+      <h3>GIMP - GNU Image Manipulation Program</h3>
+      <div><a href="gimp-part1.html" target="_blank">GIMP - Part 1</a></div>
+      <div><a href="gimp-part2.html" target="_blank">GIMP - Part 2</a></div>
+      <div><a href="gimp-part3.html" target="_blank">GIMP - Part 3</a></div>
+      <div><a href="gimp-part4.html" target="_blank">GIMP - Part 4</a></div>
+      <br>
+      <br>
+      <h3>Photoshop</h3>
+      <div><a href="ps-part1.html" target="_blank">Photoshop - Part 1</a></div>
+      <div><a href="ps-part2.html" target="_blank">Photoshop - Part 2</a></div>
+      <div><a href="ps-part3.html" target="_blank">Photoshop - Part 3</a></div>
+      <br>
+      <br>
+    </div>
+  </div>
+</main>
+
+<!--==========================
+    Footer
+  ============================-->
+<footer id="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 text-lg-left text-center">
+        <div class="credits"> </div>
+      </div>
+      <div class="col-lg-6"> </div>
+    </div>
+  </div>
+</footer>
+<!-- #footer --> 
+
+<a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a> 
+
+<!-- JavaScript Libraries --> 
+<script src="lib/jquery/jquery.min.js"></script> 
+<script src="lib/jquery/jquery-migrate.min.js"></script> 
+<script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script> 
+<script src="lib/easing/easing.min.js"></script> 
+<script src="lib/wow/wow.min.js"></script> 
+<script src="lib/superfish/hoverIntent.js"></script> 
+<script src="lib/superfish/superfish.min.js"></script> 
+<script src="lib/magnific-popup/magnific-popup.min.js"></script> 
+
+<!-- Template Main Javascript File --> 
+<script src="js/main.js"></script> 
+
+<!-- NodeJS Auth0 --> 
+<script src="node_modules/auth0-js/build/auth0.js"></script> 
+<script src="js/auth0-variables.js"></script> 
+<script src="app.js"></script>
+</body>
+</html>
