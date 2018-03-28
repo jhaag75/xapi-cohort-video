@@ -19,6 +19,11 @@
 </video>
 <script type="text/javascript">
     
+        var actorEmail = localStorage.actorEmail;
+        var actorName = localStorage.actorName;
+        console.log('local storage actor name from page:' + localStorage.actorName);
+        console.log('local storage actor email from page:' + localStorage.actorEmail);
+    
     // ADL LRS Configuration - Basic Auth for demo purposes  
     if(ADL.XAPIWrapper.lrs.auth == undefined) {
         var conf = {

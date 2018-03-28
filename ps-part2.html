@@ -18,6 +18,10 @@
   <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
 </video>
 <script type="text/javascript">
+        var actorEmail = localStorage.actorEmail;
+        var actorName = localStorage.actorName;
+        console.log('local storage actor name from page:' + localStorage.actorName);
+        console.log('local storage actor email from page:' + localStorage.actorEmail);    
     
     // ADL LRS Configuration - Basic Auth for demo purposes  
     if(ADL.XAPIWrapper.lrs.auth == undefined) {
