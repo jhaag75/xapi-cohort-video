@@ -72,6 +72,8 @@ window.addEventListener('load', function() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    localStorage.removeItem('actorName');
+    localStorage.removeItem('actorEmail');
     displayButtons();
   }
 
@@ -92,6 +94,9 @@ window.addEventListener('load', function() {
       videoViewBtn.style.display = 'inline-block';
       loginStatus.innerHTML =
         'You are logged in! You can now watch the videos.';
+      getActorProfile();
+
+        
     } else {
       homeView.style.display = 'inline-block';
       loginBtn.style.display = 'inline-block';
@@ -118,16 +123,52 @@ window.addEventListener('load', function() {
         if (profile) {
           userProfile = profile;
           displayProfile();
+
         }
       });
     } else {
       displayProfile();
+      
     }
   }
 
+  function getActorProfile() {
+    if (!userProfile) {
+      var accessToken = localStorage.getItem('access_token');
+        
+
+      if (!accessToken) {
+        console.log('Access token must exist to fetch profile');
+      }
+
+      webAuth.client.userInfo(accessToken, function(err, profile) {
+        if (profile) {
+          userProfile = profile;
+          storeActorInfo();
+
+        }
+      });
+    } else {
+      storeActorInfo();
+      
+    }
+  }
+
+function storeActorInfo() {
+    if (localStorage) {
+        localStorage.actorName = userProfile.name;
+        localStorage.actorEmail = userProfile.email;      
+        console.log('local storage actor name:' + localStorage.actorName);
+        console.log('local storage actor email:' + localStorage.actorEmail);
+      } else {
+        console.log('local storage is not supported');
+      }    
+    
+}    
+    
   function displayProfile() {
-    console.log('name from auth0:' + userProfile.name);
-    console.log('email from auth0:' + userProfile.email);      
+    // Get email and name in local storage
+     getActorProfile();      
       
     // display the profile name
     document.querySelector('#profile-view .name').innerHTML =
@@ -137,16 +178,7 @@ window.addEventListener('load', function() {
     document.querySelector('#profile-view .email').innerHTML =
       userProfile.email;
     
-      
-    if (localStorage) {
-        localStorage.actorName = userProfile.name;
-        localStorage.actorEmail = userProfile.email;      
-        console.log('local storage actor name:' + localStorage.actorName);
-        console.log('local storage actor email:' + localStorage.actorEmail);
-      } else {
-        console.log('local storage is not supported');
-      }
-      
+
     document.querySelector(
       '#profile-view .full-profile'
     ).innerHTML = JSON.stringify(userProfile, null, 2);
