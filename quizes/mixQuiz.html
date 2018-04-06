@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Mixology Assessment</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style type="text/css">
+      body { padding:10px 30px; }
+      label.question, #submit {
+        font-weight:bold;
+        margin-top:10px;
+      }
+      form {
+        background-color:#eee;
+        padding:10px;
+      }
+      label {
+        display:block;
+        font-weight: normal;
+      }
+    </style>
+      
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="../xAPIWrapper-1.10.4/src/xapiwrapper.js"></script>
+    <script type="text/javascript" src="../xAPIWrapper-1.10.4/lib/cryptojs_v3.1.2.js"></script>
+   <script type="text/javascript">
+        var actorEmail = localStorage.actorEmail;
+        var actorName = localStorage.actorName;
+        console.log('local storage actor name from page:' + localStorage.actorName);
+        console.log('local storage actor email from page:' + localStorage.actorEmail);    
+    
+    // LRS Configuration - Basic Auth for demo purposes  
+        var conf = {
+           "endpoint" : "https://videocohort.lrs.io:443/xapi/",
+           "auth" : "Basic " + toBase64('videocohort:1827364vodeo345'),
+           "actor" : '{"mbox": "mailto:'+ actorEmail +'","name": " '+ actorName +' ","objectType": "Agent"}'
+            //"actor" : '{"mbox": "mailto:videocohort@veracity.it","name": "Team Video","objectType": "Agent"}'
+        };
+        ADL.XAPIWrapper.changeConfig(conf);       
+        var actor = JSON.parse(ADL.XAPIWrapper.lrs.actor);
+        console.log(actor);
+        
+      $(function(){
+        // Bind to radio selection events and call the "answered" function
+        $('input[type="radio"]').click(function(e, v){
+          // Get the text from the parent label and strip off whitespace
+          answered($(this).attr("name"), $(this).parent("label").text().trim());
+        });
+      });
+
+      // Used to capture an answer selection
+      function answered(question, answer) {        
+        var statement = {
+            "actor": actor,
+            "verb": {
+                "id": "http://adlnet.gov/expapi/verbs/answered",
+                "display": {
+                    "en-US": "answered"
+                }
+            },
+            "object": {
+                "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/" + question,
+                "definition": {
+                    "name": {
+                        "en-US": "Mixology Quiz: " + question
+                    },
+                    "description": {
+                        "en-US": "Assessment for the Mixology videos"
+                    }
+                },
+                "objectType": "Activity"
+            },
+            "result": {
+                "response": answer
+            },
+            "context": {
+                "contextActivities": {
+                    "parent": [
+                        {
+                            "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/assessment",
+                            "definition": {
+                                "name": {
+                                    "en-US": "Mixology Quiz"
+                                },
+                                "description": {
+                                    "en-US": "Assessment for the Mixology videos"
+                                }
+                            },
+                            "objectType": "Activity"
+                        },
+                    ],
+                    "grouping": [
+                        {
+                            "definition": {
+                                "name": {
+                                    "en-US": "Mixology Assessment"
+                                },
+                                "description": {
+                                    "en-US": "An assessment to test your knowledge of several mixed drinks"
+                                }
+                            },
+                            "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
+                            "objectType": "Activity"
+                        }
+                    ]
+                }
+            }
+        };
+        console.log("answered statement sent")
+        ADL.XAPIWrapper.sendStatement(statement, function(){}); // adding an empty function at the end of sendStatement tells it to fire async
+        console.log(statement);
+      }
+
+      // Used to calculate score of the assesment
+      function calculateScore() {
+        var raw = 0;
+        var q1 = document.getElementsByName("question1");
+        var q2 = document.getElementsByName("question2");
+        var q3 = document.getElementsByName("question3");
+        var q4 = document.getElementsByName("question4");
+        var q5 = document.getElementsByName("question5");
+        var q6 = document.getElementsByName("question6");
+        
+        
+          
+        if(q1[2].checked == true) { raw++; } // answer 3 is correct
+        if(q2[1].checked == true) { raw++; } // answer 2 is correct
+        if(q3[3].checked == true) { raw++; } // answer 3 is correct
+        if(q4[0].checked == true) { raw++; } // answer 4 is correct
+        if(q5[1].checked == true) { raw++; } // answer 5 is correct
+        if(q6[3].checked == true) { raw++; } // answer 6 is correct
+        
+        return raw;
+      }
+
+      // Linked to the submission button with the 'onclick' attribute
+      function submission() {
+        // Calculate the row score
+        var raw = calculateScore();
+        
+        // This statement was generated using http://adlnet.github.io/xapi-lab/
+        var statement = {
+            "actor": actor,
+            "verb": {
+                "id": "http://adlnet.gov/expapi/verbs/completed",
+                "display": {
+                    "en-US": "completed"
+                }
+            },
+            "object": {
+                "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/assessment",
+                "definition": {
+                    "name": {
+                        "en-US": "Mixology Quiz"
+                    },
+                    "description": {
+                        "en-US": "Assessment for the Mixology videos"
+                    }
+                },
+                "objectType": "Activity"
+            },
+            "result": {
+                "score": {
+                    "raw": raw,
+                    "min": 0,
+                    "max": 6
+                }
+            },
+            "context": {
+                "contextActivities": {
+                    "parent": [
+                        {
+                            "definition": {
+                                "name": {
+                                    "en-US": "Mixology Assessment"
+                                },
+                                "description": {
+                                    "en-US": "An assessment to test your understanding of how to create several mixed drinks"
+                                }
+                            },
+                            "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
+                            "objectType": "Activity"
+                        }
+                    ]
+                }
+            }
+        };
+
+        // Dispatch the statement to the LRS
+        console.log("quiz completed");
+        ADL.XAPIWrapper.sendStatement(statement);
+        console.log(statement);
+        alert("Thank you for taking the Mixology assessment \nYou got " + raw + " correct. \nTo view answers, click the ** Correct Answers ** link at the bottom of this page.");
+        return false; // stops the page from refreshing
+      }
+    </script>
+    
+  </head>
+  <body>
+
+    <h1>Mixology Quiz <img src="images/mintJulep.png" width="100"></h1>
+    <h3>How much do you know about Mojito, Mint Julep and Bloody Mary drinks? </h3>
+    
+      <p>We'd like your help with our team-video cohort project. Our objective is to track different types of videos for learning and using xAPI in order to look at patterns of behavior for different types and lengths of videos. Your help will give us solid data with which to perform our analysis.</p>
+      
+      <p>Please perform the following steps.</p>  
+    
+    <ul>
+        <li>Watch the <a href="https://jhaag75.github.io/xapi-cohort-video/" target="_blank">Mixology</a> videos.</li>
+        <li>Answer the assessment questions below by picking the best answer for each question. </li>
+        <li>Click Submit when complete.</li>
+    </ul>
+      
+    <p>&nbsp;</p>
+      
+
+    <form onsubmit="return submission()">
+      <label class="question">The mojito originated in...</label>
+      <label><input type="radio" name="question1" /> &nbsp; Jamaica</label>
+      <label><input type="radio" name="question1" /> &nbsp;  Mexico</label>
+      <label><input type="radio" name="question1" /> &nbsp;  Cuba</label>
+      <label><input type="radio" name="question1" /> &nbsp;  Puerto Rico</label>
+      <br />
+      
+      <label class="question">The four main ingredients to a mojito are...</label>
+      <label><input type="radio" name="question2" /> &nbsp;  White rum, grapefruit juice, sugar and carbonated water</label>
+      <label><input type="radio" name="question2" /> &nbsp;  White rum, club soda, sugar and lime</label>
+      <label><input type="radio" name="question2" /> &nbsp;  Tequila, club soda, sugar and lime</label>
+      <label><input type="radio" name="question2" /> &nbsp;  Dark rum, ginger ale, demerara syrup and lime</label>
+      <br />
+        
+      <label class="question">The four main ingredients to a mint julep are...</label>
+      <label><input type="radio" name="question3" /> &nbsp;  Vodka, seltzer water, lemon slices, sugar</label>
+      <label><input type="radio" name="question3" /> &nbsp;  White Whiskey, club soda, mint leaves, sugar</label>
+      <label><input type="radio" name="question3" /> &nbsp;  Whiskey, grapefruit juice, mint leaves, honey syrup</label>
+      <label><input type="radio" name="question3" /> &nbsp;  Kentucky Bourbon, seltzer water, mint leaves, sugar</label>
+      <br />
+        
+      <label class="question">At a minimum, these three things go into a Bloody Mary...</label>
+      <label><input type="radio" name="question4" /> &nbsp;  Vodka, Tomato juice, tabasco sauce</label>
+      <label><input type="radio" name="question4" /> &nbsp;  Gin, club soda, lime wedges</label>
+      <label><input type="radio" name="question4" /> &nbsp;  Dark rum, lime juice, demerara syrup</label>
+      <label><input type="radio" name="question4" /> &nbsp;  Vermouth, orange bitters, seltzer water</label>
+      <br />
+        
+      <label class="question">Which U.S. sporting event is the Mint Julep cocktail associated with?</label>
+      <label><input type="radio" name="question5" /> &nbsp;  The US Open</label>
+      <label><input type="radio" name="question5" /> &nbsp;  The Kentucky Derby</label>
+      <label><input type="radio" name="question5" /> &nbsp;  The World Series</label>
+      <label><input type="radio" name="question5" /> &nbsp;  The Indianapolis 500</label>
+      <br />
+      
+      <label class="question">During its creation, mixing the contents of a Bloody Mary is done by...</label>
+      <label><input type="radio" name="question6" /> &nbsp;  using a blender</label>
+      <label><input type="radio" name="question6" /> &nbsp;  using a drink shaker</label>
+      <label><input type="radio" name="question6" /> &nbsp;  using a bar spoon</label>
+      <label><input type="radio" name="question6" /> &nbsp;  rolling the contents from glass to glass</label>
+      <br />
+    
+        
+      <input type="submit" />
+        
+      <p>&nbsp;</p>
+              
+      <p><em>Go here to see correct answers: <a href="correctAnswersMixology.html" target="_blank">Correct Answers</a>.</em>
+      </p>
+        
+      <p>&nbsp;</p>
+    
+    </form>
+
+  </body>
+</html>

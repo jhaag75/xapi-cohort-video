@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    
+    <title>GIMP Assessment Answers</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style type="text/css">
+      body { padding:10px 30px; }
+      label.question, #submit {
+        font-weight:bold;
+        margin-top:10px;
+      }
+      form {
+        background-color:#eee;
+        padding:10px;
+      }
+      label {
+        display:block;
+        font-weight: normal;
+      } 
+        
+    </style>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="xapiwrapper.min.js"></script>
+    
+  </head>
+  <body>
+
+    <h1>GIMP Quiz <img src="images/gimpLogo1.png" width="100"></h1>
+    <h3>Correct answers are indicated by the filled radio button</h3>
+
+    <form onsubmit="return submission()">
+      <label class="question">Adding borders around a graphic is done through...</label>
+      <label><input type="radio" name="question1" /> &nbsp; Tools > Paint Tools > Pencil</label>
+      <label><input type="radio" name="question1" /> &nbsp;  Colors > Auto > Stroke</label>
+      <label><input type="radio" checked name="question1" /> &nbsp;  Filters > Decor > Add Border</label>
+      <label><input type="radio" name="question1" /> &nbsp;  Layers > Transform border</label>
+      <br />
+      
+      <label class="question">Placing a shadow on an image is accomplished with...</label>
+      <label><input type="radio" name="question2" /> &nbsp;  Making a copy of the layer and moving beneath original</label>
+      <label><input type="radio" checked name="question2" /> &nbsp;  Filters > Light and Shadow > Drop Shadow</label>
+      <label><input type="radio" name="question2" /> &nbsp;  Image > Transform > Edge</label>
+      <label><input type="radio" name="question2" /> &nbsp;  Layer > Duplicate Layer > Fill</label>
+      <br />
+        
+      <label class="question">When you add text to an image, what automatically happens?</label>
+      <label><input type="radio" checked name="question3" /> &nbsp;  A text layer is added</label>
+      <label><input type="radio" name="question3" /> &nbsp;  The text is made transparent</label>
+      <label><input type="radio" name="question3" /> &nbsp;  A floating layer is added</label>
+      <label><input type="radio" name="question3" /> &nbsp;  The new text layer is merged with the original layer</label>
+      <br />
+        
+      <label class="question">The Move tool looks like a...</label>
+      <label><input type="radio" name="question4" /> &nbsp;  rectangle with 4 protruding arrows</label>
+      <label><input type="radio" name="question4" /> &nbsp;  pointer</label>
+      <label><input type="radio" name="question4" /> &nbsp;  pointer within a rectangle</label>
+      <label><input type="radio" checked name="question4" /> &nbsp;  four pointed arrow</label>
+      <br />
+        
+      <label class="question">Which of these most accurately describes "cropping?"</label>
+      <label><input type="radio" name="question5" /> &nbsp;  cropping creates a duplicate of part of an image</label>
+      <label><input type="radio" checked name="question5" /> &nbsp;  cropping is the removal of the outer parts of an image</label>
+      <label><input type="radio" name="question5" /> &nbsp;  cropping means to fit something fit within its boundaries</label>
+      <label><input type="radio" name="question5" /> &nbsp;  cropping means to form one image around another image</label>
+      <br />
+        
+      <label class="question">An easy way to recolor a graphic is with...</label>
+      <label><input type="radio" checked name="question6" /> &nbsp;  Colors > Hue-Saturation</label>
+      <label><input type="radio" name="question6" /> &nbsp;  the paint brush tool</label>
+      <label><input type="radio" name="question6" /> &nbsp;  Image Transform</label>
+      <label><input type="radio" name="question6" /> &nbsp;  Filters > Color options</label>
+      <br />
+        
+      <label class="question">One way to begin the process of removing a background color is to click which tool?</label>
+      <label><input type="radio" name="question7" /> &nbsp;  Rectangular selection tool</label>
+      <label><input type="radio" name="question7" /> &nbsp;  Bucket Fill Tool</label>
+      <label><input type="radio" checked name="question7" /> &nbsp;  Fuzzy Select tool</label>
+      <label><input type="radio" name="question7" /> &nbsp;  Ink tool</label>
+      <br />
+        
+      <label class="question">Which keyboard combination merges a floating layer into a pre-existing layer?</label>
+      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-Shift-H</label>
+      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-M</label>
+      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-Shift-M</label>
+      <label><input type="radio" checked name="question8" /> &nbsp;  Ctrl-H</label>
+      <br />
+        
+      <label class="question">What is the visual clue that a layer is "selected?"</label>
+      <label><input type="radio" name="question9" /> &nbsp;  The selected layer comes to the front of all other layers</label>
+      <label><input type="radio" checked name="question9" /> &nbsp;  A dotted line appears around that layer in the drawing area</label>
+      <label><input type="radio" name="question9" /> &nbsp;  All other layers become 'dimmed'</label>
+      <label><input type="radio" name="question9" /> &nbsp;  The layer button becomes selected</label>
+      <br />
+        
+      <label class="question">Creating a rounded graphic from a rectangular one results in a...</label>
+      <label><input type="radio" checked name="question10" /> &nbsp;  new image</label>
+      <label><input type="radio" name="question10" /> &nbsp;  rounded rectangular graphic</label>
+      <label><input type="radio" name="question10" /> &nbsp;  cropped original image</label>
+      <label><input type="radio" name="question10" /> &nbsp;  border around the original graphic</label>
+      <br />
+        
+      <label class="question">What dialog box displays when trying to change the dimensions to *part* of an image?</label>
+      <label><input type="radio" name="question11" /> &nbsp;  the Shrink dialog box</label>
+      <label><input type="radio" name="question11" /> &nbsp;  the Info dialog box</label>
+      <label><input type="radio" name="question11" /> &nbsp;  the Transform dialog box</label>
+      <label><input type="radio" checked name="question11" /> &nbsp;  the Scale dialog box</label>
+      <br />
+        
+      <label class="question">What is one concern of resizing a graphic with resizing handles?</label>
+      <label><input type="radio" name="question12" /> &nbsp;  It may become pixelated</label>
+      <label><input type="radio" name="question12" /> &nbsp;  Perspective may form</label>
+      <label><input type="radio" checked name="question12" /> &nbsp;  It does nothing to change the actual size of the file in bytes</label>
+      <label><input type="radio" name="question12" /> &nbsp;  Shearing may happen</label>
+      <br />
+        
+      <label class="question">You can open a Photoshop file into Gimp by...</label>
+      <label><input type="radio" name="question13" /> &nbsp;  using the File > Import command</label>
+      <label><input type="radio" checked name="question13" /> &nbsp;  selecting File > Open</label>
+      <label><input type="radio" name="question13" /> &nbsp;  converting the Photoshop file to a GIMP file first</label>
+      <label><input type="radio" name="question13" /> &nbsp;  using the File > Convert command</label>
+      <br />
+        
+      <label class="question">One command necessary in creating a border around text is the...</label>
+      <label><input type="radio" name="question14" /> &nbsp;  Edit > Stroke command</label>
+      <label><input type="radio" name="question14" /> &nbsp;  Filter > Border command</label>
+      <label><input type="radio" name="question14" /> &nbsp;  Transform > Border command</label>
+      <label><input type="radio" checked name="question14" /> &nbsp;  Stroke Path command</label>
+      <br /> 
+    
+        
+      <input type="submit" />
+        
+      <p>&nbsp;</p>
+      
+    </form>
+
+
+  </body>
+</html>
