@@ -76,6 +76,58 @@
 
     // keep track of user's answers
     let numCorrect = 0;
+      
+// Used to submit a terminated statement with the score
+      function terminatedScore() {   
+
+          
+               var terminatedStmt = {
+                "actor": actor,
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/terminated",
+                    "display": {
+                        "en-US": "terminated"
+                    }
+                },
+                "object": {
+                    "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/mixQuiz.html",
+                    "definition": {
+                        "name": {
+                            "en-US": "Mixology Quiz"
+                        },
+                        "description": {
+                            "en-US": "Assessment for the Mixology videos",
+                        },
+                        "type": "http://adlnet.gov/expapi/activities/assessment"
+                    },
+                    "objectType": "Activity"
+                },
+                "result": {
+                    "score": {
+                        "raw": rawScore,
+                        "scaled": scaledScore,
+                        "min": 0,
+                        "max": 100
+                    }
+                },
+                "context": {
+                    "contextActivities": {
+                        "category": [{
+                            "id": "https://w3id.org/xapi/scorm"
+                        }]
+                    }
+                }
+            };
+
+            //send completed statement to the LRS
+            console.log("terminated statement sent");
+            ADL.XAPIWrapper.sendStatement(terminatedStmt, function (resp, obj) {
+                console.log("Response from LRS: " + resp.status + " - " + resp.statusText);
+            });
+            console.log(terminatedStmt);      
+     
+      }           
+      
 
     // for each question...
     myQuestions.forEach((currentQuestion, questionNumber) => {
@@ -323,6 +375,12 @@
 
     // show number of correct answers out of total
     resultsContainer.innerHTML = `You scored ${numCorrect} out of ${myQuestions.length}.`;
+    var rawScore = numCorrect/myQuestions.length;
+    var tempScore = rawScore * 100;
+    var scaledScore = Math.round(tempScore); 
+    terminatedScore();
+    console.log("raw score:" + rawScore);
+    console.log("scaled score:" + scaledScore);        
   }
 
   const quizContainer = document.getElementById("quiz");
