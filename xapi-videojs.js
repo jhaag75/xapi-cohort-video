@@ -706,9 +706,10 @@
 
         function terminateModal() {
 
-            var modal = myPlayer.createModal('The video has ended. Click the close button to exit.');
+            var modal = myPlayer.createModal('The video has ended. Click the close button to save your progress and exit.');
             modal.on('modalclose', function () {
                 TerminateMyPlayer();
+                window.close();
             });
 
         }
