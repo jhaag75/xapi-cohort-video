@@ -108,7 +108,6 @@
                 "result": {
                     "score": {
                         "raw": rawScore,
-                        "scaled": scaledScore,
                         "min": 0,
                         "max": 100
                     }
@@ -383,12 +382,10 @@
     
     // show number of correct answers out of total
     resultsContainer.innerHTML = `You scored ${numCorrect} out of ${myQuestions.length}.`; 
-    var rawScore = numCorrect;
-    var tempScore = numCorrect/myQuestions.length;
-    var scaledScore = Math.round(tempScore); 
+    var tempScore = numCorrect / myQuestions.length * 100;
+    var rawScore = Math.round(tempScore);
     terminatedScore();
     console.log("raw score:" + rawScore);
-    console.log("scaled score:" + scaledScore);  
   }
 
   const quizContainer = document.getElementById("quiz");
