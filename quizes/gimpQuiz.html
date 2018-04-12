@@ -383,8 +383,8 @@
     
     // show number of correct answers out of total
     resultsContainer.innerHTML = `You scored ${numCorrect} out of ${myQuestions.length}.`; 
-    var rawScore = numCorrect/myQuestions.length;
-    var tempScore = rawScore * 100;
+    var rawScore = numCorrect;
+    var tempScore = numCorrect/myQuestions.length;
     var scaledScore = Math.round(tempScore); 
     terminatedScore();
     console.log("raw score:" + rawScore);
