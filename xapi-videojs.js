@@ -162,7 +162,7 @@
             window.addEventListener("beforeunload", function (e) {
                 terminate_player = true;
                 if (myPlayer.paused())
-                    TerminateMyPlayer();
+                    terminateModal();
                 else
                     myPlayer.pause();
             });
@@ -501,7 +501,7 @@
                 }
 
                 if (terminate_player)
-                    TerminateMyPlayer();
+                    terminateModal();
             } else {
                 //skip subsequent play Event
                 skipPlayEvent = true;
