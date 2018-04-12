@@ -162,7 +162,7 @@
             window.addEventListener("beforeunload", function (e) {
                 terminate_player = true;
                 if (myPlayer.paused())
-                    terminateModal();
+                    TerminateMyPlayer();
                 else
                     myPlayer.pause();
             });
