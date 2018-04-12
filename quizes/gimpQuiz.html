@@ -1,33 +1,20 @@
+<!doctype html>
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    
-    <title>GIMP Assessment</title>
+<html>
+<head>
+<title>GIMP Quiz, Spring 2018, xAPI Cohort</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0">
+<script type="text/javascript" src="../xAPIWrapper-1.10.4/src/xapiwrapper.js"></script>
+<script type="text/javascript" src="../xAPIWrapper-1.10.4/lib/cryptojs_v3.1.2.js"></script>
+</head>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <style type="text/css">
-      body { padding:10px 30px; }
-      label.question, #submit {
-        font-weight:bold;
-        margin-top:10px;
-      }
-      form {
-        background-color:#eee;
-        padding:10px;
-      }
-      label {
-        display:block;
-        font-weight: normal;
-      }
-    </style>
-      
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript" src="../xAPIWrapper-1.10.4/src/xapiwrapper.js"></script>
-    <script type="text/javascript" src="../xAPIWrapper-1.10.4/lib/cryptojs_v3.1.2.js"></script>
-    <script type="text/javascript">
+<body>
+<div id="quiz"></div>
+<button id="submit">Submit Quiz</button>
+<div id="results"></div>
+<script type="text/javascript">
+            
         var actorEmail = localStorage.actorEmail;
         var actorName = localStorage.actorName;
         console.log('local storage actor name from page:' + localStorage.actorName);
@@ -43,57 +30,151 @@
         ADL.XAPIWrapper.changeConfig(conf);       
         var actor = JSON.parse(ADL.XAPIWrapper.lrs.actor);
         console.log(actor);
-    
-                
-      $(function(){
-        // Bind to radio selection events and call the "answered" function
-        $('input[type="radio"]').click(function(e, v){
-          // Get the text from the parent label and strip off whitespace
-          answered($(this).attr("name"), $(this).parent("label").text().trim());
-        });
-      });
+            
+            
+    (function() {
+      function buildQuiz() {
+        // storage place for HTML output
+        const output = [];
 
+        // for each question...
+        myQuestions.forEach((currentQuestion, questionNumber) => {
+          // for storing the list of answer choices
+          const answers = [];
+
+          // and for each available answer...
+          for (letter in currentQuestion.answers) {
+            // ...add an HTML radio button
+            answers.push(
+              `<label>
+                <input type="radio" name="question${questionNumber}" value="${letter}">
+                ${letter} :
+                ${currentQuestion.answers[letter]} <br />
+              </label>`
+            );
+      }
+
+      // add this question and its answers to the output
+      output.push(
+        `<div class="question"> ${currentQuestion.question} </div>
+        <div class="answers"> ${answers.join("")} </div> 
+        <div><br /></div>`
+      );
+    });
+
+    // combine our output list into one string of HTML and put it on the page
+    quizContainer.innerHTML = output.join("");
+  }
+
+  function showResults() {
+    // gather answer containers from our quiz
+    const answerContainers = quizContainer.querySelectorAll(".answers");
+
+    // keep track of user's answers
+    let numCorrect = 0;
+
+    // for each question...
+    myQuestions.forEach((currentQuestion, questionNumber) => {
+      // find selected answer
+      const answerContainer = answerContainers[questionNumber];
+      const selector = `input[name=question${questionNumber}]:checked`;
+      const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+
+      // if answer is correct
+      if (userAnswer === currentQuestion.correctAnswer) {
+        // add to the number of correct answers
+        numCorrect++;
+
+        // color the answers green
+        answerContainers[questionNumber].style.color = "lightgreen";
+      
+        //send the xAPIstatement
+        answered(currentQuestion,myQuestions.correctAnswer);
+      
       // Used to capture an answer selection
-      function answered(question, answer) {        
+      function answered(currentQuestion, correctAnswer) {        
         var statement = {
             "actor": actor,
             "verb": {
-                "id": "http://adlnet.gov/expapi/verbs/answered",
+                "id": "http://adlnet.gov/expapi/verbs/responded",
                 "display": {
-                    "en-US": "answered"
+                    "en-US": "responded"
                 }
             },
             "object": {
-                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz#" + question,
+                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz#" + currentQuestion.question,
                 "definition": {
                     "name": {
-                        "en-US": "GIMP Quiz: " + question
+                        "en-US": "Question: " + currentQuestion.question
                     },
                     "description": {
-                        "en-US": "Assessment for the GIMP image editing program"
-                    }
+                        "en-US": currentQuestion.question
+                    },
+                    "correctResponsesPattern": [
+                        currentQuestion.correctAnswer
+                    ],
+                    "interactionType": "choice",
+                    "type": "http://adlnet.gov/expapi/activities/interaction",
+                    "choices": [
+                        {
+                            "id": "Choice-a",
+                            "description": {
+                                "en-US": currentQuestion.answers.a
+                            }
+                        },
+                        {
+                            "id": "Choice-b",
+                            "description": {
+                                "en-US": currentQuestion.answers.b
+                            }
+                        },
+                        {
+                            "id": "Choice-c",
+                            "description": {
+                                "en-US": currentQuestion.answers.c
+                            }
+                        },
+                        {
+                            "id": "Choice-d",
+                            "description": {
+                                "en-US": currentQuestion.answers.d
+                            }
+                        }
+                    ]
                 },
                 "objectType": "Activity"
             },
             "result": {
-                "response": answer
+                "response": currentQuestion.correctAnswer,
+                "success": true
             },
             "context": {
                 "contextActivities": {
+                    
+                    "category": [
+                        {
+                            "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/profile"
+                            },
+                            "id": "https://w3id.org/xapi/scorm"
+                            }
+                        ],
                     "parent": [
                         {
-                            "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz.html",
-                            "definition": {
-                                "name": {
-                                    "en-US": "GIMP Quiz"
-                                },
-                                "description": {
-                                    "en-US": "Assessment for the GIMP image editing program"
-                                }
-                            },
-                            "objectType": "Activity"
+                        "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/assessment",
+                        "name": {
+                            "en-US": "GIMP Quiz"
+                        },                            
+                        "description": {
+
+                        "en-US": "Assessment for the GIMP image editing program"
+                        }
                         },
-                    ],
+                        "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz.html", "objectType": "Activity"
+                        }
+                        ],
+                    
                     "grouping": [
                         {
                             "definition": {
@@ -111,82 +192,106 @@
                 }
             }
         };
-        console.log("answered statement sent");
+        console.log("responded correctly statement sent");
         ADL.XAPIWrapper.sendStatement(statement, function(){}); // adding an empty function at the end of sendStatement tells it to fire async
         console.log(statement);
       }
-
-      // Used to calculate score of the assesment
-      function calculateScore() {
-        var raw = 0;
-        var q1 = document.getElementsByName("question1");
-        var q2 = document.getElementsByName("question2");
-        var q3 = document.getElementsByName("question3");
-        var q4 = document.getElementsByName("question4");
-        var q5 = document.getElementsByName("question5");
-        var q6 = document.getElementsByName("question6");
-        var q7 = document.getElementsByName("question7");
-        var q8 = document.getElementsByName("question8");
-        var q9 = document.getElementsByName("question9");
-        var q10 = document.getElementsByName("question10");
-        var q11 = document.getElementsByName("question11");
-        var q12 = document.getElementsByName("question12");
-        var q13 = document.getElementsByName("question13");
-        var q14 = document.getElementsByName("question14");
-          
-        if(q1[2].checked == true) { raw++; } // answer 3 is correct
-        if(q2[1].checked == true) { raw++; } // answer 2 is correct
-        if(q3[0].checked == true) { raw++; } // answer 3 is correct
-        if(q4[3].checked == true) { raw++; } // answer 4 is correct
-        if(q5[1].checked == true) { raw++; } // answer 5 is correct
-        if(q6[0].checked == true) { raw++; } // answer 6 is correct
-        if(q7[2].checked == true) { raw++; } // answer 7 is correct
-        if(q8[3].checked == true) { raw++; } // answer 8 is correct
-        if(q9[1].checked == true) { raw++; } // answer 9 is correct
-        if(q10[0].checked == true) { raw++; } // answer 10 is correct
-        if(q11[3].checked == true) { raw++; } // answer 11 is correct
-        if(q12[2].checked == true) { raw++; } // answer 12 is correct
-        if(q13[1].checked == true) { raw++; } // answer 13 is correct
-        if(q14[3].checked == true) { raw++; } // answer 14 is correct
-        return raw;
-      }
-
-      // Linked to the submission button with the 'onclick' attribute
-      function submission() {
-        // Calculate the row score
-        var raw = calculateScore();
+            
+      } //end of if
         
-        // This statement was generated using http://adlnet.github.io/xapi-lab/
+        else {
+        // if answer is wrong or blank
+        // color the answers red
+        answerContainers[questionNumber].style.color = "red";
+      
+            
+        //send the xAPIstatement when answered incorrectly
+        answeredIncorrect(currentQuestion,myQuestions.correctAnswer, userAnswer);
+      
+      // Used to capture an answer selection
+      function answeredIncorrect(currentQuestion, correctAnswer, userAnswer) {        
         var statement = {
             "actor": actor,
             "verb": {
-                "id": "http://adlnet.gov/expapi/verbs/completed",
+                "id": "http://adlnet.gov/expapi/verbs/responded",
                 "display": {
-                    "en-US": "completed"
+                    "en-US": "responded"
                 }
             },
             "object": {
-                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz.html",
+                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz#" + currentQuestion.question,
                 "definition": {
                     "name": {
-                        "en-US": "GIMP Quiz"
+                        "en-US": "Question: " + currentQuestion.question
                     },
                     "description": {
-                        "en-US": "Assessment for the GIMP image editing program"
-                    }
+                        "en-US": currentQuestion.question
+                    },
+                    "correctResponsesPattern": [
+                        currentQuestion.correctAnswer
+                    ],
+                    "interactionType": "choice",
+                    "type": "http://adlnet.gov/expapi/activities/interaction",
+                    "choices": [
+                        {
+                            "id": "Choice-a",
+                            "description": {
+                                "en-US": currentQuestion.answers.a
+                            }
+                        },
+                        {
+                            "id": "Choice-b",
+                            "description": {
+                                "en-US": currentQuestion.answers.b
+                            }
+                        },
+                        {
+                            "id": "Choice-c",
+                            "description": {
+                                "en-US": currentQuestion.answers.c
+                            }
+                        },
+                        {
+                            "id": "Choice-d",
+                            "description": {
+                                "en-US": currentQuestion.answers.d
+                            }
+                        }
+                    ]
                 },
                 "objectType": "Activity"
             },
             "result": {
-                "score": {
-                    "raw": raw,
-                    "min": 0,
-                    "max": 14
-                }
+                "response": userAnswer,
+                "success": false
             },
             "context": {
                 "contextActivities": {
+                    "category": [
+                        {
+                            "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/profile"
+                            },
+                            "id": "https://w3id.org/xapi/scorm"
+                            }
+                        ],
                     "parent": [
+                        {
+                        "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/assessment",
+                        "name": {
+                            "en-US": "GIMP Quiz"
+                        },                            
+                        "description": {
+
+                        "en-US": "Assessment for the GIMP image editing program"
+                        }
+                        },
+                        "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz.html", "objectType": "Activity"
+                        }
+                        ],
+                    
+                    "grouping": [
                         {
                             "definition": {
                                 "name": {
@@ -203,138 +308,176 @@
                 }
             }
         };
-
-        // Dispatch the statement to the LRS
-        console.log("quiz completed");
-        ADL.XAPIWrapper.sendStatement(statement);
+        console.log("responded incorrectly statement sent");
+        ADL.XAPIWrapper.sendStatement(statement, function(){}); // adding an empty function at the end of sendStatement tells it to fire async
         console.log(statement);
-        alert("Thank you for taking the GIMP assessment \nYou got " + raw + " correct. \nTo view answers, click the ** Correct Answers ** link at the bottom of this page.");
-        return false; // stops the page from refreshing
-      }
-    </script>
-    
-  </head>
-  <body>
+      } 
+                    
+      } //end of else
+    });
 
-    <h1>GIMP Quiz <img src="../img/gimpLogo1.png" width="100"></h1>
-    <h3>How much do you know about GIMP? </h3>
-    
-      <p>We'd like your help with our team-video cohort project. Our objective is to track different types of videos for learning and using xAPI in order to look at patterns of behavior for different types and lengths of videos. Your help will give us solid data with which to perform our analysis.</p>
-      
-      <p>Please perform the following steps.</p>  
-    
-    <ul>
-        <li>Optional: <a href="https://www.gimp.org/downloads/" target="_blank">Dowload GIMP</a> (free).</li>
-        <li>Watch the <a href="https://jhaag75.github.io/xapi-cohort-video/" target="_blank">GIMP for instructional designers</a> videos.</li>
-        <li>Answer the assessment questions below by picking the best answer for each question. </li>
-        <li>Click Submit when complete.</li>
-    </ul>
-      
-    <p>&nbsp;</p>
-      
+    // show number of correct answers out of total
+    resultsContainer.innerHTML = `You scored ${numCorrect} out of ${myQuestions.length}.`;
+  }
 
-    <form onsubmit="return submission()">
-      <label class="question">Adding borders around a graphic is done through...</label>
-      <label><input type="radio" name="question1" /> &nbsp; Tools > Paint Tools > Pencil</label>
-      <label><input type="radio" name="question1" /> &nbsp;  Colors > Auto > Stroke</label>
-      <label><input type="radio" name="question1" /> &nbsp;  Filters > Decor > Add Border</label>
-      <label><input type="radio" name="question1" /> &nbsp;  Layers > Transform border</label>
-      <br />
-      <label class="question">Placing a shadow on an image is accomplished with...</label>
-      <label><input type="radio" name="question2" /> &nbsp;  Making a copy of the layer and moving beneath original</label>
-      <label><input type="radio" name="question2" /> &nbsp;  Filters > Light and Shadow > Drop Shadow</label>
-      <label><input type="radio" name="question2" /> &nbsp;  Image > Transform > Edge</label>
-      <label><input type="radio" name="question2" /> &nbsp;  Layer > Duplicate Layer > Fill</label>
-      <br />
-      <label class="question">When you add text to an image, what automatically happens?</label>
-      <label><input type="radio" name="question3" /> &nbsp;  A text layer is added</label>
-      <label><input type="radio" name="question3" /> &nbsp;  The text is made transparent</label>
-      <label><input type="radio" name="question3" /> &nbsp;  A floating layer is added</label>
-      <label><input type="radio" name="question3" /> &nbsp;  The new text layer is merged with the original layer</label>
-      <br />
-      <label class="question">The Move tool looks like a...</label>
-      <label><input type="radio" name="question4" /> &nbsp;  rectangle with 4 protruding arrows</label>
-      <label><input type="radio" name="question4" /> &nbsp;  pointer</label>
-      <label><input type="radio" name="question4" /> &nbsp;  pointer within a rectangle</label>
-      <label><input type="radio" name="question4" /> &nbsp;  four pointed arrow</label>
-      <br />
-      <label class="question">Which of these most accurately describes "cropping?"</label>
-      <label><input type="radio" name="question5" /> &nbsp;  cropping creates a duplicate of part of an image</label>
-      <label><input type="radio" name="question5" /> &nbsp;  cropping is the removal of the outer parts of an image</label>
-      <label><input type="radio" name="question5" /> &nbsp;  cropping means to fit something fit within its boundaries</label>
-      <label><input type="radio" name="question5" /> &nbsp;  cropping means to form one image around another image</label>
-      <br />
-      <label class="question">An easy way to recolor a graphic is with...</label>
-      <label><input type="radio" name="question6" /> &nbsp;  Colors > Hue-Saturation</label>
-      <label><input type="radio" name="question6" /> &nbsp;  the paint brush tool</label>
-      <label><input type="radio" name="question6" /> &nbsp;  Image Transform</label>
-      <label><input type="radio" name="question6" /> &nbsp;  Filters > Color options</label>
-      <br />
-      <label class="question">One way to begin the process of removing a background color is to click which tool?</label>
-      <label><input type="radio" name="question7" /> &nbsp;  Rectangular selection tool</label>
-      <label><input type="radio" name="question7" /> &nbsp;  Bucket Fill Tool</label>
-      <label><input type="radio" name="question7" /> &nbsp;  Fuzzy Select tool</label>
-      <label><input type="radio" name="question7" /> &nbsp;  Ink tool</label>
-      <br />
-      <label class="question">Which keyboard combination merges a floating layer into a pre-existing layer?</label>
-      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-Shift-H</label>
-      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-M</label>
-      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-Shift-M</label>
-      <label><input type="radio" name="question8" /> &nbsp;  Ctrl-H</label>
-      <br />
-      <label class="question">What is the visual clue that a layer is "selected?"</label>
-      <label><input type="radio" name="question9" /> &nbsp;  The selected layer comes to the front of all other layers</label>
-      <label><input type="radio" name="question9" /> &nbsp;  A dotted line appears around that layer in the drawing area</label>
-      <label><input type="radio" name="question9" /> &nbsp;  All other layers become 'dimmed'</label>
-      <label><input type="radio" name="question9" /> &nbsp;  The layer button becomes selected</label>
-      <br />
-        
-      <label class="question">Creating a rounded graphic from a rectangular one results in a...</label>
-      <label><input type="radio" name="question10" /> &nbsp;  new image</label>
-      <label><input type="radio" name="question10" /> &nbsp;  rounded rectangular graphic</label>
-      <label><input type="radio" name="question10" /> &nbsp;  cropped original image</label>
-      <label><input type="radio" name="question10" /> &nbsp;  border around the original graphic</label>
-      <br />
-        
-      <label class="question">What dialog box displays when trying to change the dimensions to *part* of an image?</label>
-      <label><input type="radio" name="question11" /> &nbsp;  the Shrink dialog box</label>
-      <label><input type="radio" name="question11" /> &nbsp;  the Info dialog box</label>
-      <label><input type="radio" name="question11" /> &nbsp;  the Transform dialog box</label>
-      <label><input type="radio" name="question11" /> &nbsp;  the Scale dialog box</label>
-      <br />
-        
-      <label class="question">What is one concern of resizing a graphic with resizing handles?</label>
-      <label><input type="radio" name="question12" /> &nbsp;  It may become pixelated</label>
-      <label><input type="radio" name="question12" /> &nbsp;  Perspective may form</label>
-      <label><input type="radio" name="question12" /> &nbsp;  It does nothing to change the actual size of the file in bytes</label>
-      <label><input type="radio" name="question12" /> &nbsp;  Shearing may happen</label>
-      <br />
-        
-      <label class="question">You can open a Photoshop file into Gimp by...</label>
-      <label><input type="radio" name="question13" /> &nbsp;  using the File > Import command</label>
-      <label><input type="radio" name="question13" /> &nbsp;  selecting File > Open</label>
-      <label><input type="radio" name="question13" /> &nbsp;  converting the Photoshop file to a GIMP file first</label>
-      <label><input type="radio" name="question13" /> &nbsp;  using the File > Convert command</label>
-      <br />
-        
-      <label class="question">One command necessary in creating a border around text is the...</label>
-      <label><input type="radio" name="question14" /> &nbsp;  Edit > Stroke command</label>
-      <label><input type="radio" name="question14" /> &nbsp;  Filter > Border command</label>
-      <label><input type="radio" name="question14" /> &nbsp;  Transform > Border command</label>
-      <label><input type="radio" name="question14" /> &nbsp;  Stroke Path command</label>
-      <br /> 
+  const quizContainer = document.getElementById("quiz");
+  const resultsContainer = document.getElementById("results");
+  const submitButton = document.getElementById("submit");
+  const myQuestions = [
     
-        
-      <input type="submit" />
-        
-      <p>&nbsp;</p>
-              
-      <p><em>Go here to see correct answers: <a href="correctAnswers.html" target="_blank">Correct Answers</a>.</em>
-      </p>
-        
-      <p>&nbsp;</p>
-    
-    </form>
+  //************************ QUESTIONS BEGIN HERE *************************  
+            
+    {
+      question: "Adding borders around a graphic is done through what sequence of commands",
+      answers: {
+        a: "Tools > Paint Tools > Pencil",
+        b: "Colors > Auto > Stroke",
+        c: "Filters > Decor > Add Border",
+        d: "Layers > Transform border"
+      },
+      correctAnswer: "c"
+    },
+    {
+      question: "Placing a shadow on an image is accomplished in which way",
+      answers: {
+        a: "Making a copy of the layer and moving beneath original",
+        b: "Filters > Light and Shadow > Drop Shadow",
+        c: "Image > Transform > Edge",
+        d: "Layer > Duplicate Layer > Fill"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "When you add text to an image, what automatically happens in GIMP",
+      answers: {
+        a: "A text layer is added",
+        b: "The text is made transparent",
+        c: "A floating layer is added",
+        d: "The new text layer is merged with the original layer"
+      },
+      correctAnswer: "a"
+    },
+    {
+      question: "The Move tool looks like which one of these",
+      answers: {
+        a: "rectangle with 4 protruding arrows",
+        b: "pointer",
+        c: "pointer within a rectangle",
+        d: "four pointed arrow"
+      },
+      correctAnswer: "d"
+    },
+    {
+      question: "Which of these most accurately describes the feature called cropping",
+      answers: {
+        a: "cropping creates a duplicate of part of an image",
+        b: "cropping is the removal of the outer parts of an image",
+        c: "cropping means to fit something fit within its boundaries",
+        d: "cropping means to form one image around another image"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "Which one of these provides an easy way to recolor a graphic",
+      answers: {
+        a: "Colors > Hue-Saturation",
+        b: "the paint brush tool",
+        c: "Image Transform",
+        d: "Filters > Color options"
+      },
+      correctAnswer: "a"
+    },
+    {
+      question: "One way to begin the process of removing a background color is to click which tool",
+      answers: {
+        a: "Rectangular selection tool",
+        b: "Bucket Fill Tool",
+        c: "Fuzzy Select tool",
+        d: "Ink tool"
+      },
+      correctAnswer: "c"
+    },
+    {
+      question: "Which keyboard combination merges a floating layer into a pre-existing layer",
+      answers: {
+        a: "Ctrl-Shift-H",
+        b: "Ctrl-M",
+        c: "Ctrl-Shift-M",
+        d: "Ctrl-H"
+      },
+      correctAnswer: "d"
+    },
+    {
+      question: "What is the visual clue that a layer is selected",
+      answers: {
+        a: "The selected layer comes to the front of all other layers",
+        b: "A dotted line appears around that layer in the drawing area",
+        c: "All other layers become 'dimmed'",
+        d: "The layer button becomes selected"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "Creating a rounded graphic from a rectangular one results in what",
+      answers: {
+        a: "new image",
+        b: "rounded rectangular graphic",
+        c: "cropped original image",
+        d: "border around the original graphic"
+      },
+      correctAnswer: "a"
+    },
+    {
+      question: "What dialog box displays when trying to change the dimensions to *part* of an image",
+      answers: {
+        a: "the Shrink dialog box",
+        b: "the Info dialog box",
+        c: "the Transform dialog box",
+        d: "the Scale dialog box"
+      },
+      correctAnswer: "d"
+    },
+    {
+      question: "What is one concern of resizing a graphic with resizing handles",
+      answers: {
+        a: "It may become pixelated",
+        b: "Perspective may form",
+        c: "It does nothing to change the actual size of the file in bytes",
+        d: "Shearing may happen"
+      },
+      correctAnswer: "c"
+    },
+    {
+      question: "You can open a Photoshop file into Gimp by",
+      answers: {
+        a: "using the File > Import command",
+        b: "selecting File > Open",
+        c: "converting the Photoshop file to a GIMP file first",
+        d: "using the File > Convert command"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "One command necessary in creating a border around text is the",
+      answers: {
+        a: "Edit > Stroke command",
+        b: "Filter > Border command",
+        c: "Transform > Border command",
+        d: "Stroke Path command"
+      },
+      correctAnswer: "d"
+    }
+      
+    //************************ QUESTIONS END HERE *************************        
+  
+  ];
 
-  </body>
+  // display quiz right away
+  buildQuiz();
+
+  // on submit, show results
+  submitButton.addEventListener("click", showResults);
+})();
+        </script>
+</body>
 </html>

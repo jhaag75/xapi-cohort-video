@@ -49,59 +49,29 @@
         // Bind to radio selection events and call the "answered" function
         $('input[type="radio"]').click(function(e, v){
           // Get the text from the parent label and strip off whitespace
-          answered($(this).attr("name"), $(this).parent("label").text().trim(), $choices, $correctAnswer );
+          answered($(this).attr("name"), $(this).parent("label").text().trim());
         });
       });
 
       // Used to capture an answer selection
-      function answered(question, answer, choices, correctAnswer) {        
+      function answered(question, answer) {        
         var statement = {
             "actor": actor,
             "verb": {
-                "id": "http://adlnet.gov/expapi/verbs/responded",
+                "id": "http://adlnet.gov/expapi/verbs/answered",
                 "display": {
-                    "en-US": "responded"
+                    "en-US": "answered"
                 }
             },
             "object": {
-                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz/" + question,
-                
+                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz#" + question,
                 "definition": {
                     "name": {
                         "en-US": "GIMP Quiz: " + question
                     },
                     "description": {
                         "en-US": "Assessment for the GIMP image editing program"
-                    },
-                    "correctResponsesPattern": ["Choice-1"],
-                    "interactionType": "choice",
-                    "type": "http://adlnet.gov/expapi/activities/interaction",
-                          "choices": [
-                            {
-                              "id": "Choice-1",
-                              "description": {
-                                "en-US": ""
-                              }
-                            },
-                            {
-                              "id": "Choice-2",
-                              "description": {
-                                "en-US": ""
-                              }
-                            },
-                            {
-                              "id": "Choice-3",
-                              "description": {
-                                "en-US": ""
-                              }
-                            },
-                            {
-                              "id": "Choice-4",
-                              "description": {
-                                "en-US": ""
-                              }
-                            }
-                          ]
+                    }
                 },
                 "objectType": "Activity"
             },
@@ -112,7 +82,7 @@
                 "contextActivities": {
                     "parent": [
                         {
-                            "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/assessment",
+                            "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz.html",
                             "definition": {
                                 "name": {
                                     "en-US": "GIMP Quiz"
@@ -128,13 +98,13 @@
                         {
                             "definition": {
                                 "name": {
-                                    "en-US": "GIMP Assessment"
+                                    "en-US": "GIMP for Instructional Designers"
                                 },
                                 "description": {
-                                    "en-US": "An assessment to test your knowledge of GIMP"
+                                    "en-US": "The fundamentals of using GIMP."
                                 }
                             },
-                            "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
+                            "id": "https://jhaag75.github.io/xapi-cohort-video/GIMP",
                             "objectType": "Activity"
                         }
                     ]
@@ -196,7 +166,7 @@
                 }
             },
             "object": {
-                "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/assessment",
+                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/gimpQuiz.html",
                 "definition": {
                     "name": {
                         "en-US": "GIMP Quiz"
@@ -220,13 +190,13 @@
                         {
                             "definition": {
                                 "name": {
-                                    "en-US": "GIMP Assessment"
+                                    "en-US": "GIMP for Instructional Designers"
                                 },
                                 "description": {
-                                    "en-US": "An assessment to test your knowledge of GIMP"
+                                    "en-US": "The fundamentals of using GIMP."
                                 }
                             },
-                            "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
+                            "id": "https://jhaag75.github.io/xapi-cohort-video/GIMP",
                             "objectType": "Activity"
                         }
                     ]

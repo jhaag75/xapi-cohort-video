@@ -1,277 +1,419 @@
+<!doctype html>
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    
-    <title>Mixology Assessment</title>
+<html>
+	<head>
+		<title>Mixology Quiz, Spring 2018, xAPI Cohort</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1.0">
+        <script src="xapiwrapper.min.js"></script>
+	</head>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <style type="text/css">
-      body { padding:10px 30px; }
-      label.question, #submit {
-        font-weight:bold;
-        margin-top:10px;
-      }
-      form {
-        background-color:#eee;
-        padding:10px;
-      }
-      label {
-        display:block;
-        font-weight: normal;
-      }
-    </style>
-      
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript" src="../xAPIWrapper-1.10.4/src/xapiwrapper.js"></script>
-    <script type="text/javascript" src="../xAPIWrapper-1.10.4/lib/cryptojs_v3.1.2.js"></script>
-   <script type="text/javascript">
-        var actorEmail = localStorage.actorEmail;
-        var actorName = localStorage.actorName;
-        console.log('local storage actor name from page:' + localStorage.actorName);
-        console.log('local storage actor email from page:' + localStorage.actorEmail);    
-    
-    // LRS Configuration - Basic Auth for demo purposes  
-        var conf = {
-           "endpoint" : "https://videocohort.lrs.io:443/xapi/",
-           "auth" : "Basic " + toBase64('videocohort:1827364vodeo345'),
-           "actor" : '{"mbox": "mailto:'+ actorEmail +'","name": " '+ actorName +' ","objectType": "Agent"}'
-            //"actor" : '{"mbox": "mailto:videocohort@veracity.it","name": "Team Video","objectType": "Agent"}'
-        };
-        ADL.XAPIWrapper.changeConfig(conf);       
-        var actor = JSON.parse(ADL.XAPIWrapper.lrs.actor);
-        console.log(actor);
+	<body>
         
-      $(function(){
-        // Bind to radio selection events and call the "answered" function
-        $('input[type="radio"]').click(function(e, v){
-          // Get the text from the parent label and strip off whitespace
-          answered($(this).attr("name"), $(this).parent("label").text().trim());
-        });
-      });
+        <div id="quiz"></div>
+        <button id="submit">Submit Quiz</button>
+        <div id="results"></div>
+        
+        <script>
+            
+        // Configure xapiwrapper to work with the Veracity LRS
+        var conf = {
+         'endpoint': 'https://videocohort.lrs.io:443/xapi/',
+         'user': 'videocohort',
+         'password': '1827364vodeo345',
+      };    
+        
+      ADL.XAPIWrapper.changeConfig(conf);
+            
+            
+            (function() {
+  function buildQuiz() {
+    // storage place for HTML output
+    const output = [];
 
+    // for each question...
+    myQuestions.forEach((currentQuestion, questionNumber) => {
+      // for storing the list of answer choices
+      const answers = [];
+
+      // and for each available answer...
+      for (letter in currentQuestion.answers) {
+        // ...add an HTML radio button
+        answers.push(
+          `<label>
+            <input type="radio" name="question${questionNumber}" value="${letter}">
+            ${letter} :
+            ${currentQuestion.answers[letter]} <br />
+          </label>`
+        );
+      }
+
+      // add this question and its answers to the output
+      output.push(
+        `<div class="question"> ${currentQuestion.question} </div>
+        <div class="answers"> ${answers.join("")} </div> 
+        <div><br /></div>`
+      );
+    });
+
+    // combine our output list into one string of HTML and put it on the page
+    quizContainer.innerHTML = output.join("");
+  }
+
+  function showResults() {
+    // gather answer containers from our quiz
+    const answerContainers = quizContainer.querySelectorAll(".answers");
+
+    // keep track of user's answers
+    let numCorrect = 0;
+
+    // for each question...
+    myQuestions.forEach((currentQuestion, questionNumber) => {
+      // find selected answer
+      const answerContainer = answerContainers[questionNumber];
+      const selector = `input[name=question${questionNumber}]:checked`;
+      const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+
+      // if answer is correct
+      if (userAnswer === currentQuestion.correctAnswer) {
+        // add to the number of correct answers
+        numCorrect++;
+
+        // color the answers green
+        answerContainers[questionNumber].style.color = "lightgreen";
+      
+        //send the xAPIstatement
+        answered(currentQuestion,myQuestions.correctAnswer);
+      
       // Used to capture an answer selection
-      function answered(question, answer) {        
+      function answered(currentQuestion, correctAnswer) {        
         var statement = {
-            "actor": actor,
+            "actor": {
+                "mbox": "mailto:gimp.user@xapicohort.com",
+                "name": "GIMP user",
+                "objectType": "Agent"
+            },
             "verb": {
-                "id": "http://adlnet.gov/expapi/verbs/answered",
+                "id": "http://adlnet.gov/expapi/verbs/responded",
                 "display": {
-                    "en-US": "answered"
+                    "en-US": "responded"
                 }
             },
             "object": {
-                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/mixQuiz#" + question,
+                "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
                 "definition": {
                     "name": {
-                        "en-US": "Mixology Quiz: " + question
+                        "en-US": "Question: " + currentQuestion.question
                     },
                     "description": {
-                        "en-US": "Assessment for the Mixology videos"
-                    }
+                        "en-US": currentQuestion.question
+                    },
+                    "correctResponsesPattern": [
+                        currentQuestion.correctAnswer
+                    ],
+                    "interactionType": "choice",
+                    "type": "http://adlnet.gov/expapi/activities/interaction",
+                    "choices": [
+                        {
+                            "id": "Choice-a",
+                            "description": {
+                                "en-US": currentQuestion.answers.a
+                            }
+                        },
+                        {
+                            "id": "Choice-b",
+                            "description": {
+                                "en-US": currentQuestion.answers.b
+                            }
+                        },
+                        {
+                            "id": "Choice-c",
+                            "description": {
+                                "en-US": currentQuestion.answers.c
+                            }
+                        },
+                        {
+                            "id": "Choice-d",
+                            "description": {
+                                "en-US": currentQuestion.answers.d
+                            }
+                        }
+                    ]
                 },
                 "objectType": "Activity"
             },
             "result": {
-                "response": answer
+                "duration": "PT0H2M30.76S",
+                "response": currentQuestion.correctAnswer,
+                "success": true
             },
             "context": {
                 "contextActivities": {
+                    
+                    "category": [
+                        {
+                            "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/profile"
+                            },
+                            "id": "https://w3id.org/xapi/scorm"
+                            },
+                            {
+                            "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/profile"
+                            },
+                            "id": "https://w3id.org/xapi/netc"
+                        }
+                        ],
                     "parent": [
                         {
-                            "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/mixQuiz.html",
-                            "definition": {
-                                "name": {
-                                    "en-US": "Mixology Quiz"
-                                },
-                                "description": {
-                                    "en-US": "Assessment for the Mixology videos"
-                                }
-                            },
-                            "objectType": "Activity"
+                        "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/lesson",
+                        "description": {
+
+                        "en-US": "Assessment"
+                        }
                         },
-                    ],
+                        "id": "iri://unique-identifer-matches-identifier-from-sco-in-manifest", "objectType": "Activity"
+                        }
+                        ],
+                    
                     "grouping": [
                         {
-                            "definition": {
-                                "name": {
-                                    "en-US": "Mixology"
-                                },
-                                "description": {
-                                    "en-US": "Recipes and tutoriasl on how to make popular cocktails."
-                                }
-                            },
-                            "id": "https://jhaag75.github.io/xapi-cohort-video/mixology",
-                            "objectType": "Activity"
+                        "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/attempt"
+                        },
+                        "id": "rrl://ORG-aec61309",
+                        "objectType": "Activity"
+                        },
+                        {
+                        "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/course",
+                            "description": {
+                                "en-US": "Course Name"
+                            }
+                        },
+                        "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
+                        "objectType": "Activity"
                         }
                     ]
                 }
             }
         };
-        console.log("answered statement sent")
         ADL.XAPIWrapper.sendStatement(statement, function(){}); // adding an empty function at the end of sendStatement tells it to fire async
-        console.log(statement);
       }
-
-      // Used to calculate score of the assesment
-      function calculateScore() {
-        var raw = 0;
-        var q1 = document.getElementsByName("question1");
-        var q2 = document.getElementsByName("question2");
-        var q3 = document.getElementsByName("question3");
-        var q4 = document.getElementsByName("question4");
-        var q5 = document.getElementsByName("question5");
-        var q6 = document.getElementsByName("question6");
+            
+      } //end of if
         
-        
-          
-        if(q1[2].checked == true) { raw++; } // answer 3 is correct
-        if(q2[1].checked == true) { raw++; } // answer 2 is correct
-        if(q3[3].checked == true) { raw++; } // answer 3 is correct
-        if(q4[0].checked == true) { raw++; } // answer 4 is correct
-        if(q5[1].checked == true) { raw++; } // answer 5 is correct
-        if(q6[3].checked == true) { raw++; } // answer 6 is correct
-        
-        return raw;
-      }
-
-      // Linked to the submission button with the 'onclick' attribute
-      function submission() {
-        // Calculate the row score
-        var raw = calculateScore();
-        
-        // This statement was generated using http://adlnet.github.io/xapi-lab/
+        else {
+        // if answer is wrong or blank
+        // color the answers red
+        answerContainers[questionNumber].style.color = "red";
+      
+            
+        //send the xAPIstatement when answered incorrectly
+        answeredIncorrect(currentQuestion,myQuestions.correctAnswer, userAnswer);
+      
+      // Used to capture an answer selection
+      function answeredIncorrect(currentQuestion, correctAnswer, userAnswer) {        
         var statement = {
-            "actor": actor,
+            "actor": {
+                "mbox": "mailto:gimp.user@xapicohort.com",
+                "name": "GIMP user",
+                "objectType": "Agent"
+            },
             "verb": {
-                "id": "http://adlnet.gov/expapi/verbs/completed",
+                "id": "http://adlnet.gov/expapi/verbs/responded",
                 "display": {
-                    "en-US": "completed"
+                    "en-US": "responded"
                 }
             },
             "object": {
-                "id": "https://jhaag75.github.io/xapi-cohort-video/quizes/mixQuiz.html",
+                "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
                 "definition": {
                     "name": {
-                        "en-US": "Mixology Quiz"
+                        "en-US": "Question: " + currentQuestion.question
                     },
                     "description": {
-                        "en-US": "Assessment for the Mixology videos"
-                    }
+                        "en-US": currentQuestion.question
+                    },
+                    "correctResponsesPattern": [
+                        currentQuestion.correctAnswer
+                    ],
+                    "interactionType": "choice",
+                    "type": "http://adlnet.gov/expapi/activities/interaction",
+                    "choices": [
+                        {
+                            "id": "Choice-a",
+                            "description": {
+                                "en-US": currentQuestion.answers.a
+                            }
+                        },
+                        {
+                            "id": "Choice-b",
+                            "description": {
+                                "en-US": currentQuestion.answers.b
+                            }
+                        },
+                        {
+                            "id": "Choice-c",
+                            "description": {
+                                "en-US": currentQuestion.answers.c
+                            }
+                        },
+                        {
+                            "id": "Choice-d",
+                            "description": {
+                                "en-US": currentQuestion.answers.d
+                            }
+                        }
+                    ]
                 },
                 "objectType": "Activity"
             },
             "result": {
-                "score": {
-                    "raw": raw,
-                    "min": 0,
-                    "max": 6
-                }
+                "duration": "PT0H2M30.76S",
+                "response": userAnswer,
+                "success": false
             },
             "context": {
                 "contextActivities": {
-                    "parent": [
+                    "category": [
                         {
                             "definition": {
-                                "name": {
-                                    "en-US": "Mixology"
-                                },
-                                "description": {
-                                    "en-US": "Recipes and tutoriasl on how to make popular cocktails."
-                                }
+                            "type": "http://adlnet.gov/expapi/activities/profile"
                             },
-                            "id": "https://jhaag75.github.io/xapi-cohort-video/mixology",
-                            "objectType": "Activity"
+                            "id": "https://w3id.org/xapi/scorm"
+                            },
+                            {
+                            "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/profile"
+                            },
+                            "id": "https://w3id.org/xapi/netc"
+                        }
+                        ],
+                    "parent": [
+                        {
+                        "definition": {
+                        "type": "http://adlnet.gov/expapi/activities/lesson",
+                        "description": {
+
+                        "en-US": "Assessment"
+                        }
+                        },
+                        "id": "iri://unique-identifer-matches-identifier-from-sco-in-manifest", "objectType": "Activity"
+                        }
+                        ],
+                    
+                    "grouping": [
+                        {
+                        "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/attempt"
+                        },
+                        "id": "rrl://ORG-aec61309",
+                        "objectType": "Activity"
+                        },
+                        {
+                        "definition": {
+                            "type": "http://adlnet.gov/expapi/activities/course",
+                            "description": {
+                                "en-US": "Course Name"
+                            }
+                        },
+                        "id": "http://adlnet.gov/expapi/tutorials/xapiwrapper/",
+                        "objectType": "Activity"
                         }
                     ]
                 }
             }
         };
+        ADL.XAPIWrapper.sendStatement(statement, function(){}); // adding an empty function at the end of sendStatement tells it to fire async
+      } 
+                    
+      } //end of else
+    });
 
-        // Dispatch the statement to the LRS
-        console.log("quiz completed");
-        ADL.XAPIWrapper.sendStatement(statement);
-        console.log(statement);
-        alert("Thank you for taking the Mixology assessment \nYou got " + raw + " correct. \nTo view answers, click the ** Correct Answers ** link at the bottom of this page.");
-        return false; // stops the page from refreshing
-      }
-    </script>
-    
-  </head>
-  <body>
+    // show number of correct answers out of total
+    resultsContainer.innerHTML = `You scored ${numCorrect} out of ${myQuestions.length}.`;
+  }
 
-    <h1>Mixology Quiz <img src="images/mintJulep.png" width="100"></h1>
-    <h3>How much do you know about Mojito, Mint Julep and Bloody Mary drinks? </h3>
+  const quizContainer = document.getElementById("quiz");
+  const resultsContainer = document.getElementById("results");
+  const submitButton = document.getElementById("submit");
+  const myQuestions = [
     
-      <p>We'd like your help with our team-video cohort project. Our objective is to track different types of videos for learning and using xAPI in order to look at patterns of behavior for different types and lengths of videos. Your help will give us solid data with which to perform our analysis.</p>
+  //************************ QUESTIONS BEGIN HERE *************************  
+            
+    {
+      question: "The mojito originated in",
+      answers: {
+        a: "Jamaica",
+        b: "Mexico",
+        c: "Cuba",
+        d: "Puerto Rico"
+      },
+      correctAnswer: "c"
+    },
+    {
+      question: "The four main ingredients to a mojito are",
+      answers: {
+        a: "White rum, grapefruit juice, sugar and carbonated water",
+        b: "White rum, club soda, sugar and lime",
+        c: "Tequila, club soda, sugar and lime",
+        d: "Dark rum, ginger ale, demerara syrup and lime"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "The four main ingredients to a mint julep are",
+      answers: {
+        a: "Vodka, seltzer water, lemon slices, sugar",
+        b: "White Whiskey, club soda, mint leaves, sugar",
+        c: "Whiskey, grapefruit juice, mint leaves, honey syrup",
+        d: "Kentucky Bourbon, seltzer water, mint leaves, sugar"
+      },
+      correctAnswer: "d"
+    },
+    {
+      question: "At a minimum, these three things go into a Bloody Mary",
+      answers: {
+        a: "Vodka, Tomato juice, tabasco sauce",
+        b: "Gin, club soda, lime wedges",
+        c: "Dark rum, lime juice, demerara syrup",
+        d: "Vermouth, orange bitters, seltzer water"
+      },
+      correctAnswer: "a"
+    },
+    {
+      question: "Which U.S. sporting event is the Mint Julep cocktail associated with",
+      answers: {
+        a: "The US Open",
+        b: "The Kentucky Derby",
+        c: "The World Series",
+        d: "The Indianapolis 500"
+      },
+      correctAnswer: "b"
+    },
+    {
+      question: "During its creation, mixing the contents of a Bloody Mary is done by",
+      answers: {
+        a: "using a blender",
+        b: "using a drink shaker",
+        c: "using a bar spoon",
+        d: "rolling the contents from glass to glass"
+      },
+      correctAnswer: "d"
+    }
       
-      <p>Please perform the following steps.</p>  
-    
-    <ul>
-        <li>Watch the <a href="https://jhaag75.github.io/xapi-cohort-video/" target="_blank">Mixology</a> videos.</li>
-        <li>Answer the assessment questions below by picking the best answer for each question. </li>
-        <li>Click Submit when complete.</li>
-    </ul>
-      
-    <p>&nbsp;</p>
-      
+    //************************ QUESTIONS END HERE *************************        
+  
+  ];
 
-    <form onsubmit="return submission()">
-      <label class="question">The mojito originated in...</label>
-      <label><input type="radio" name="question1" /> &nbsp; Jamaica</label>
-      <label><input type="radio" name="question1" /> &nbsp;  Mexico</label>
-      <label><input type="radio" name="question1" /> &nbsp;  Cuba</label>
-      <label><input type="radio" name="question1" /> &nbsp;  Puerto Rico</label>
-      <br />
-      
-      <label class="question">The four main ingredients to a mojito are...</label>
-      <label><input type="radio" name="question2" /> &nbsp;  White rum, grapefruit juice, sugar and carbonated water</label>
-      <label><input type="radio" name="question2" /> &nbsp;  White rum, club soda, sugar and lime</label>
-      <label><input type="radio" name="question2" /> &nbsp;  Tequila, club soda, sugar and lime</label>
-      <label><input type="radio" name="question2" /> &nbsp;  Dark rum, ginger ale, demerara syrup and lime</label>
-      <br />
-        
-      <label class="question">The four main ingredients to a mint julep are...</label>
-      <label><input type="radio" name="question3" /> &nbsp;  Vodka, seltzer water, lemon slices, sugar</label>
-      <label><input type="radio" name="question3" /> &nbsp;  White Whiskey, club soda, mint leaves, sugar</label>
-      <label><input type="radio" name="question3" /> &nbsp;  Whiskey, grapefruit juice, mint leaves, honey syrup</label>
-      <label><input type="radio" name="question3" /> &nbsp;  Kentucky Bourbon, seltzer water, mint leaves, sugar</label>
-      <br />
-        
-      <label class="question">At a minimum, these three things go into a Bloody Mary...</label>
-      <label><input type="radio" name="question4" /> &nbsp;  Vodka, Tomato juice, tabasco sauce</label>
-      <label><input type="radio" name="question4" /> &nbsp;  Gin, club soda, lime wedges</label>
-      <label><input type="radio" name="question4" /> &nbsp;  Dark rum, lime juice, demerara syrup</label>
-      <label><input type="radio" name="question4" /> &nbsp;  Vermouth, orange bitters, seltzer water</label>
-      <br />
-        
-      <label class="question">Which U.S. sporting event is the Mint Julep cocktail associated with?</label>
-      <label><input type="radio" name="question5" /> &nbsp;  The US Open</label>
-      <label><input type="radio" name="question5" /> &nbsp;  The Kentucky Derby</label>
-      <label><input type="radio" name="question5" /> &nbsp;  The World Series</label>
-      <label><input type="radio" name="question5" /> &nbsp;  The Indianapolis 500</label>
-      <br />
-      
-      <label class="question">During its creation, mixing the contents of a Bloody Mary is done by...</label>
-      <label><input type="radio" name="question6" /> &nbsp;  using a blender</label>
-      <label><input type="radio" name="question6" /> &nbsp;  using a drink shaker</label>
-      <label><input type="radio" name="question6" /> &nbsp;  using a bar spoon</label>
-      <label><input type="radio" name="question6" /> &nbsp;  rolling the contents from glass to glass</label>
-      <br />
-    
-        
-      <input type="submit" />
-        
-      <p>&nbsp;</p>
-              
-      <p><em>Go here to see correct answers: <a href="correctAnswersMixology.html" target="_blank">Correct Answers</a>.</em>
-      </p>
-        
-      <p>&nbsp;</p>
-    
-    </form>
+  // display quiz right away
+  buildQuiz();
 
-  </body>
+  // on submit, show results
+  submitButton.addEventListener("click", showResults);
+})();
+        </script>
+	</body>
 </html>
