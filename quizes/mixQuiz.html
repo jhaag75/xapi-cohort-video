@@ -377,8 +377,7 @@
     resultsContainer.innerHTML = `You scored ${numCorrect} out of ${myQuestions.length}.`;
     var tempScore = numCorrect / myQuestions.length * 100;
     var rawScore = Math.round(tempScore);
-    var temp2Score = rawScore * .01;
-    var scaledScore = Math.round(temp2Score);
+    var scaledScore = rawScore * .01;
     terminatedScore();
     console.log("raw score:" + rawScore); 
     console.log("scaled score:" + scaledScore);
