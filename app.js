@@ -42,7 +42,6 @@ window.addEventListener('load', function() {
     homeView.style.display = 'none';
     profileView.style.display = 'inline-block';
     videoView.style.display = 'none';
-    analyticsView.style.display = 'none';
     getProfile();
   });
     
@@ -54,13 +53,6 @@ window.addEventListener('load', function() {
     // getProfile();
   });    
 
-  analyticsViewBtn.addEventListener('click', function() {
-    homeView.style.display = 'none';
-    profileView.style.display = 'none';
-    analyticsView.style.display = 'inline-block';
-    videoView.style.display = 'none';
-    // getProfile();
-  });   
 
   loginBtn.addEventListener('click', function(e) {
     e.preventDefault();
