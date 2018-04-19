@@ -20,6 +20,7 @@ window.addEventListener('load', function() {
   var homeView = document.getElementById('home-view');
   var profileView = document.getElementById('profile-view');
   var videoView = document.getElementById('video-view');
+  var analyticsView = document.getElementById('analytics-view');
 
   // buttons and event listeners
   var loginBtn = document.getElementById('btn-login');
@@ -28,17 +29,20 @@ window.addEventListener('load', function() {
   var homeViewBtn = document.getElementById('btn-home-view');
   var profileViewBtn = document.getElementById('btn-profile-view');
   var videoViewBtn = document.getElementById('btn-video-view');
+  var analyticsViewBtn = document.getElementById('btn-analytics-view');
 
   homeViewBtn.addEventListener('click', function() {
     homeView.style.display = 'inline-block';
     profileView.style.display = 'none';
     videoView.style.display = 'none';
+    analyticsView.style.display = 'none';
   });
 
   profileViewBtn.addEventListener('click', function() {
     homeView.style.display = 'none';
     profileView.style.display = 'inline-block';
     videoView.style.display = 'none';
+    analyticsView.style.display = 'none';
     getProfile();
   });
     
@@ -46,9 +50,17 @@ window.addEventListener('load', function() {
     homeView.style.display = 'none';
     profileView.style.display = 'none';
     videoView.style.display = 'inline-block';
+    analyticsView.style.display = 'none';
     // getProfile();
   });    
-    
+
+  analyticsViewBtn.addEventListener('click', function() {
+    homeView.style.display = 'none';
+    profileView.style.display = 'none';
+    analyticsView.style.display = 'inline-block';
+    videoView.style.display = 'none';
+    // getProfile();
+  });   
 
   loginBtn.addEventListener('click', function(e) {
     e.preventDefault();
@@ -92,6 +104,7 @@ window.addEventListener('load', function() {
       logoutBtn.style.display = 'inline-block';
       profileViewBtn.style.display = 'inline-block';
       videoViewBtn.style.display = 'inline-block';
+      analyticsViewBtn.style.display = 'inline-block';
       loginStatus.innerHTML =
         'You are logged in! You can now watch the videos.';
       getActorProfile();
@@ -104,7 +117,8 @@ window.addEventListener('load', function() {
       profileViewBtn.style.display = 'none';
       profileView.style.display = 'none';
       videoView.style.display = 'none';
-      videoViewBtn.style.display = 'none';    
+      videoViewBtn.style.display = 'none';  
+      analyticsViewBtn.style.display = 'none';
       loginStatus.innerHTML =
         'You are not logged in! You can choose from your existing accounts to login without filling out any forms. Please log in to participate.';
     }
