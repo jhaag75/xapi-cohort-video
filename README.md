@@ -12,3 +12,9 @@ To install dependencies, run
 ```bash
 npm install
 ```
+
+```bash
+npm start
+```
+
+visit http://localhost:3000 on your browser
